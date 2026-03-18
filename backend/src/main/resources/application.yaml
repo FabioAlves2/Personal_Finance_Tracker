@@ -1,0 +1,23 @@
+security:
+  jwt:
+    secret-key: ${SECURITY_JWT_SECRET_KEY}
+
+server:
+  port: 8080
+
+spring:
+  application:
+    name: FinanceTracker
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    open-in-view: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: false
