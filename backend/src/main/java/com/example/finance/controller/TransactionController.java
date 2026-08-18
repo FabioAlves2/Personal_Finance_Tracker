@@ -59,19 +59,7 @@ public class TransactionController {
             @Parameter(description = "Filter by category ID")
             @RequestParam(required = false) Long categoryId
     ) {
-        Long userId = principal.getUserId();
-
-        if (type != null && start != null && end != null && categoryId == null) {
-            return transactionService.getByUserIdAndTypeAndDate(userId, type, start, end);
-        }
-        if (type != null && start == null && end == null && categoryId == null) {
-            return transactionService.getByUserAndType(userId, type);
-        }
-        if (categoryId != null && type == null && start == null && end == null) {
-            return transactionService.getByUserIdAndCategoryId(userId, categoryId);
-        }
-
-        return transactionService.getTransactionsByUser(userId);
+        return transactionService.search(principal.getUserId(), type, categoryId, start, end);
     }
 
     @PostMapping

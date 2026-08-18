@@ -51,7 +51,7 @@ public class Transaction{
     private Type type = Type.EXPENSE;
 
     public enum Type{
-        EXPENSE, INCOME
+        EXPENSE, INCOME, SAVING
     }
     
 }

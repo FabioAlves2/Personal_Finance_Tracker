@@ -37,7 +37,7 @@ public class UserService {
         User u = User.builder()
             .name(name.trim())
             .email(newEmail)
-            .hashedPassword(encoder.encode(password.trim()))
+            .hashedPassword(encoder.encode(password))
             .role("ROLE_USER")
             .build();
         User saved = users.save(u);

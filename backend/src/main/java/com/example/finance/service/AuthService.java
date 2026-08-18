@@ -29,25 +29,16 @@ public class AuthService {
 
 
     public AuthResponse login(AuthRequest req){
-        var authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(req.email(), req.password()));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        var principal = (UserPrincipal) authentication.getPrincipal();
-
-        var roles = principal.getAuthorities().stream()
-            .map(GrantedAuthority::getAuthority)
-            .toList();
-
-        var token = issue(principal.getEmail(), principal.getUserId(), roles);
-
-        var name = users.findByEmail(principal.getEmail())
-            .map(u -> u.getName())
-            .orElse(principal.getEmail());
-        return new AuthResponse(token, principal.getUserId(), name);
+        return authenticate(req.email(), req.password());
     }
 
     public AuthResponse signIn(RegisterRequest req){
-        var u = users.create(req.name(), req.email(), req.password());
-        var authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(req.email(), req.password()));
+        users.create(req.name(), req.email(), req.password());
+        return authenticate(req.email(), req.password());
+    }
+
+    private AuthResponse authenticate(String email, String password) {
+        var authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         var principal = (UserPrincipal) authentication.getPrincipal();
 
@@ -56,8 +47,7 @@ public class AuthService {
             .toList();
 
         var token = issue(principal.getEmail(), principal.getUserId(), roles);
-
-        return new AuthResponse(token, principal.getUserId(), u.name());
+        return new AuthResponse(token, principal.getUserId(), principal.getName());
     }
 
     private String issue(String email, Long userId, List<String> roles){
@@ -66,7 +56,7 @@ public class AuthService {
 
         return JWT.create()
                 .withSubject(String.valueOf(userId))
-                .withExpiresAt(Instant.now().plusSeconds(60))
+                .withExpiresAt(Instant.now().plusSeconds(3600))
                 .withIssuedAt(Instant.now())
                 .withClaim("e", email)
                 .withClaim("a", roles)
